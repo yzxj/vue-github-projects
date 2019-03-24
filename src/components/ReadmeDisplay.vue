@@ -7,17 +7,17 @@
 				Get started by searching for a user on the left, and then selecting one of their projects.
 			</p>
 		</div>
-		<div v-else-if="!validReadme">
+		<div v-else-if="!readmeExists">
 			<p class="error">
-				Something went wrong when retrieving the README! Try again, or try another README.
+				Something went wrong when retrieving the README! This repo probably doesn't have a README file. Why don't you try another one?
 			</p>
 		</div>
-		<div v-else-if="!readme">
+		<div v-else-if="typeof readme !== 'string' || !readme.trim()">
 			<p class="error">
-				This repo doesn't seem to have a readme (or it's empty). Try another one.
+				This repo doesn't seem to have a readme (or it's empty). Try another one!
 			</p>
 		</div>
-		<div v-if="readme">
+		<div v-else>
 			<hr />
 			<div v-html="compiledMarkdown" />
 		</div>
@@ -31,7 +31,7 @@ export default {
 	name: 'ReadmeDisplay',
 	props: {
 		readme: String,
-		validReadme: Boolean,
+		readmeExists: Boolean,
 		project: String,
 	},
 	computed: {

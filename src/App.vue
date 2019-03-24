@@ -10,15 +10,14 @@
       <RepositoryList
         class="grid-el grid-el__bottom-left"
         v-bind:username="username"
-        v-bind:validUser="validUser"
-        v-bind:searched="searched"
-        v-bind:repositories="repositories"
+        v-bind:userIsValid="userIsValid"
+        v-bind:projects="projects"
         v-on:select-project="selectProject"
       />
       <ReadmeDisplay class="grid-el grid-el__right"
         v-bind:project="selectedProject"
         v-bind:readme="readme"
-        v-bind:validReadme="validReadme"
+        v-bind:readmeExists="readmeExists"
       />
     </div>
   </div>
@@ -46,12 +45,11 @@ export default {
   data: function () {
     return {
       username: '',
-      validUser: false,
-      searched: false,
-      repositories: [],
+      userIsValid: false,
+      projects: [],
       selectedProject: '',
       readme: '',
-      validReadme: false,
+      readmeExists: false,
     };
   },
   methods: {
@@ -63,35 +61,32 @@ export default {
         }
         const responseJson = await response.json();
         const repositoryNames = responseJson.map(repoObj => repoObj.name);
-        this.repositories = repositoryNames;
-        this.validUser = true;
+
+        this.projects = repositoryNames;
+        this.userIsValid = true;
       } catch (err) {
-        this.repositories = [];
-        this.validUser = false;
+        this.projects = [];
+        this.userIsValid = false;
       }
       this.username = username;
       this.selectedProject = '';
       this.readme = '';
-      this.searched = true;
     },
     async selectProject(projectName) {
-      this.selectedProject = projectName;
       try {
         const response = await fetch(
           `${GITHUB_API}/repos/${this.username}/${projectName}/readme`,
           README_HEADERS
         );
-        if (response.status === 404) {
-          this.readme = '';
-        } else if (response.status !== 200) {
-          throw new Error("An Unknown Error occured when fetching the README!");
-        } else {
-          this.readme = await response.text();
+        if (response.status !== 200) {
+          throw new Error("An error occurred while fetching the README!");
         }
-        this.validReadme = true;
+        this.readme = await response.text();
+        this.readmeExists = true;
       } catch (err) {
-        this.validReadme = false;
+        this.readmeExists = false;
       }
+      this.selectedProject = projectName;
     }
   }
 }

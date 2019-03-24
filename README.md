@@ -1,8 +1,8 @@
 # vue-github-projects
 
-## Project setup
+## Quickstart
 ```
-yarn install
+yarn install && yarn run serve
 ```
 
 ### Compiles and hot-reloads for development
@@ -15,15 +15,13 @@ yarn run serve
 yarn run build
 ```
 
-### Run your tests
+To run production files (following the [link](https://cli.vuejs.org/guide/deployment.html#general-guidelines) given by the `yarn run build` command):
 ```
-yarn run test
+npm i -g serve
+serve -s dist
 ```
 
 ### Lints and fixes files
 ```
 yarn run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
