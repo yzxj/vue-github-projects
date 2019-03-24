@@ -2,9 +2,20 @@
   <div id="app">
     <h1>Welcome to vue-github-projects</h1>
     <div class="grid-container">
-      <UserSearch class="grid__top-left" />
-      <RepositoryList class="grid__bottom-left" />
-      <ReadmeDisplay class="grid__right" />
+      <UserSearch
+        class="grid__top-left"
+        v-model="username"
+        v-on:submit-username="submitUsername"
+      />
+      <RepositoryList
+        class="grid__bottom-left"
+        v-bind:username="username"
+        v-bind:repositories="repositories"
+      />
+      <ReadmeDisplay class="grid__right"
+        v-bind:project="selectedProject"
+        v-bind:readme="readme"
+      />
     </div>
   </div>
 </template>
@@ -14,12 +25,30 @@ import UserSearch from './components/UserSearch.vue'
 import RepositoryList from './components/RepositoryList.vue'
 import ReadmeDisplay from './components/ReadmeDisplay.vue'
 
+const GITHUB_API = 'https://api.github.com/';
+
 export default {
   name: 'app',
   components: {
     UserSearch,
     RepositoryList,
     ReadmeDisplay
+  },
+  data: function () {
+    return {
+      username: '',
+      repositories: [],
+      selectedProject: '',
+      readme: ''
+    };
+  },
+  methods: {
+    async submitUsername() {
+      const response = await fetch(`${GITHUB_API}users/${this.username}/repos`);
+      const responseJson = await response.json();
+      const repositoryNames = responseJson.map(repoObj => repoObj.name);
+      this.repositories = repositoryNames;
+    },
   }
 }
 </script>
@@ -48,6 +77,9 @@ export default {
 }
 .grid__top-left {
   grid-area: top-left;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .grid__bottom-left {
   grid-area: bottom-left;
