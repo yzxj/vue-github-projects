@@ -10,7 +10,10 @@
       <RepositoryList
         class="grid__bottom-left"
         v-bind:username="username"
+        v-bind:validUser="validUser"
+        v-bind:searched="searched"
         v-bind:repositories="repositories"
+        v-on:select-project="selectProject"
       />
       <ReadmeDisplay class="grid__right"
         v-bind:project="selectedProject"
@@ -37,18 +40,36 @@ export default {
   data: function () {
     return {
       username: '',
+      validUser: false,
+      searched: false,
       repositories: [],
       selectedProject: '',
       readme: ''
     };
   },
   methods: {
-    async submitUsername() {
-      const response = await fetch(`${GITHUB_API}users/${this.username}/repos`);
-      const responseJson = await response.json();
-      const repositoryNames = responseJson.map(repoObj => repoObj.name);
-      this.repositories = repositoryNames;
+    async submitUsername(username) {
+      try {
+        const response = await fetch(`${GITHUB_API}users/${username}/repos`);
+        if (response.status !== 200) {
+          throw new Error("Invalid user!");
+        }
+        const responseJson = await response.json();
+        const repositoryNames = responseJson.map(repoObj => repoObj.name);
+        this.repositories = repositoryNames;
+        this.validUser = true;
+      } catch (err) {
+        this.repositories = [];
+        this.validUser = false;
+      }
+      this.username = username;
+      this.selectedProject = '';
+      this.readme = '';
+      this.searched = true;
     },
+    async selectProject(projectName) {
+      console.log('event?', projectName);
+    }
   }
 }
 </script>
