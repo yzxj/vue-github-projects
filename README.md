@@ -1,4 +1,5 @@
 # vue-github-projects
+A small single-page vue app that allows you to look up Github users' public repos and view their README files.
 
 ## Quickstart
 ```
