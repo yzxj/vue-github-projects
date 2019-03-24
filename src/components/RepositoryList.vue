@@ -25,7 +25,4 @@ export default {
 </script>
 
 <style scoped>
-.repository-list {
-	border: 1px solid black;
-}
 </style>

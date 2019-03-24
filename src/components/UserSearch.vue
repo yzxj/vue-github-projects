@@ -26,9 +26,6 @@ export default {
 </script>
 
 <style scoped>
-.user-search {
-	border: 1px solid black;
-}
 .username-input {
 	width: 18vw;
 }

@@ -3,19 +3,19 @@
     <h1>Welcome to vue-github-projects</h1>
     <div class="grid-container">
       <UserSearch
-        class="grid__top-left"
+        class="grid-el grid-el__top-left"
         v-model="username"
         v-on:submit-username="submitUsername"
       />
       <RepositoryList
-        class="grid__bottom-left"
+        class="grid-el grid-el__bottom-left"
         v-bind:username="username"
         v-bind:validUser="validUser"
         v-bind:searched="searched"
         v-bind:repositories="repositories"
         v-on:select-project="selectProject"
       />
-      <ReadmeDisplay class="grid__right"
+      <ReadmeDisplay class="grid-el grid-el__right"
         v-bind:project="selectedProject"
         v-bind:readme="readme"
         v-bind:validReadme="validReadme"
@@ -75,18 +75,21 @@ export default {
       this.searched = true;
     },
     async selectProject(projectName) {
+      this.selectedProject = projectName;
       try {
         const response = await fetch(
           `${GITHUB_API}/repos/${this.username}/${projectName}/readme`,
           README_HEADERS
         );
-        if (response.status !== 200) {
-          throw new Error("Invalid readme!");
+        if (response.status === 404) {
+          this.readme = '';
+        } else if (response.status !== 200) {
+          throw new Error("An Unknown Error occured when fetching the README!");
+        } else {
+          this.readme = await response.text();
         }
-        this.readme = await response.text();
         this.validReadme = true;
       } catch (err) {
-        this.readme = '';
         this.validReadme = false;
       }
     }
@@ -104,7 +107,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  height: 100vh;
+  height: 98vh;
 }
 .grid-container {
   display: grid;
@@ -115,17 +118,23 @@ export default {
     "bottom-left right"
   ;
   flex: 1;
+  max-height: calc(98vh - 80px);
 }
-.grid__top-left {
+.grid-el {
+  margin: 1px;
+  padding: 12px;
+  border: 1px solid black;
+}
+.grid-el__top-left {
   grid-area: top-left;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.grid__bottom-left {
+.grid-el__bottom-left {
   grid-area: bottom-left;
 }
-.grid__right {
+.grid-el__right {
   grid-area: right;
 }
 </style>
