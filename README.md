@@ -1,4 +1,4 @@
-# microproject
+# vue-github-projects
 
 ## Project setup
 ```
