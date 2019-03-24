@@ -18,6 +18,7 @@
       <ReadmeDisplay class="grid__right"
         v-bind:project="selectedProject"
         v-bind:readme="readme"
+        v-bind:validReadme="validReadme"
       />
     </div>
   </div>
@@ -28,7 +29,12 @@ import UserSearch from './components/UserSearch.vue'
 import RepositoryList from './components/RepositoryList.vue'
 import ReadmeDisplay from './components/ReadmeDisplay.vue'
 
-const GITHUB_API = 'https://api.github.com/';
+const GITHUB_API = 'https://api.github.com';
+const README_HEADERS = {
+  headers: {
+    "Accept": "application/vnd.github.v3.raw+json"
+  }
+};
 
 export default {
   name: 'app',
@@ -44,13 +50,14 @@ export default {
       searched: false,
       repositories: [],
       selectedProject: '',
-      readme: ''
+      readme: '',
+      validReadme: false,
     };
   },
   methods: {
     async submitUsername(username) {
       try {
-        const response = await fetch(`${GITHUB_API}users/${username}/repos`);
+        const response = await fetch(`${GITHUB_API}/users/${username}/repos`);
         if (response.status !== 200) {
           throw new Error("Invalid user!");
         }
@@ -68,7 +75,20 @@ export default {
       this.searched = true;
     },
     async selectProject(projectName) {
-      console.log('event?', projectName);
+      try {
+        const response = await fetch(
+          `${GITHUB_API}/repos/${this.username}/${projectName}/readme`,
+          README_HEADERS
+        );
+        if (response.status !== 200) {
+          throw new Error("Invalid readme!");
+        }
+        this.readme = await response.text();
+        this.validReadme = true;
+      } catch (err) {
+        this.readme = '';
+        this.validReadme = false;
+      }
     }
   }
 }
